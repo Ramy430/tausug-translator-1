@@ -1,1 +1,293 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌍 Tausug Translator | Preserving Language Digitally</title>
+    <meta name="description" content="Translate between Tausug and English languages. Add new words, manage dictionary, and help preserve the Tausug language through community contributions.">
+    <meta name="keywords" content="Tausug, translator, dictionary, Philippine languages, Sulu, Bahasa Sug, language preservation">
+    <meta name="author" content="Ramy430">
+    
+    <!-- Fonts & Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="assets/css/style.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌍</text></svg>">
+</head>
+<body>
+    <div class="app">
+        <!-- ===== MAIN TRANSLATOR CONTAINER ===== -->
+        <div class="container">
+            <header class="app-header">
+                <div class="logo">
+                    <i class="fas fa-language"></i>
+                    <h1>Tausug Translator</h1>
+                </div>
+                <p class="tagline">Preserving the Tausug language, one word at a time</p>
+            </header>
+
+            <!-- ===== TRANSLATION SECTION ===== -->
+            <div class="translation-section">
+                <!-- Language Controls -->
+                <div class="language-controls">
+                    <div class="lang-selector">
+                        <label for="sourceLang">From:</label>
+                        <select id="sourceLang" class="language-select">
+                            <option value="auto">🔍 Auto Detect</option>
+                            <option value="tsg">🏝️ Tausug</option>
+                            <option value="en">🇬🇧 English</option>
+                        </select>
+                    </div>
+                    
+                    <button id="swapBtn" class="swap-btn" title="Swap languages">
+                        <i class="fas fa-exchange-alt"></i>
+                    </button>
+                    
+                    <div class="lang-selector">
+                        <label for="targetLang">To:</label>
+                        <select id="targetLang" class="language-select">
+                            <option value="en">🇬🇧 English</option>
+                            <option value="tsg">🏝️ Tausug</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Text Areas -->
+                <div class="text-areas">
+                    <div class="input-section">
+                        <textarea id="inputText" class="translation-input" 
+                                  placeholder="Enter text in Tausug or English..." spellcheck="false"></textarea>
+                        <div class="char-count">
+                            <span id="inputCharCount">0</span> characters
+                        </div>
+                    </div>
+                    
+                    <button id="translateBtn" class="translate-btn">
+                        <i class="fas fa-exchange-alt"></i> Translate
+                    </button>
+                    
+                    <div class="output-section">
+                        <textarea id="outputText" class="translation-output" 
+                                  readonly placeholder="Translation will appear here..."></textarea>
+                        <div class="output-actions">
+                            <div class="char-count">
+                                <span id="outputCharCount">0</span> characters
+                            </div>
+                            <div class="action-buttons">
+                                <button id="sentencesBtn" class="action-btn" title="Show example sentences">
+                                    <i class="fas fa-comment-alt"></i> Sentences
+                                </button>
+                                <button id="copyBtn" class="action-btn" title="Copy translation">
+                                    <i class="far fa-copy"></i> Copy
+                                </button>
+                                <button id="speakBtn" class="action-btn" title="Speak translation">
+                                    <i class="fas fa-volume-up"></i> Speak
+                                </button>
+                                <button id="clearBtn" class="action-btn" title="Clear all">
+                                    <i class="fas fa-trash-alt"></i> Clear
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Status Message -->
+                <div id="status" class="status-message info">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Welcome! Enter text and click "Translate" to begin.</span>
+                </div>
+                
+                <!-- ===== EXPORT/IMPORT SECTION - FIXED ===== -->
+                <div class="export-section">
+                    <h4><i class="fas fa-exchange-alt"></i> Export / Import Dictionary</h4>
+                    <div class="export-buttons">
+                        <button id="exportBtn" class="btn-secondary">
+                            <i class="fas fa-file-export"></i> Export JSON
+                        </button>
+                        <button id="exportSortedBtn" class="btn-secondary">
+                            <i class="fas fa-sort-alpha-down"></i> Export Sorted
+                        </button>
+                        <button id="importBtn" class="btn-secondary">
+                            <i class="fas fa-file-import"></i> Import JSON
+                        </button>
+                        <button id="exportForGitHubBtn" class="btn-primary">
+                            <i class="fab fa-github"></i> Export for GitHub
+                        </button>
+                        <button id="updateSourceBtn" class="btn-secondary">
+                            <i class="fas fa-code"></i> Generate dictionary.js
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== RECENT TRANSLATIONS ===== -->
+            <div class="recent-translations">
+                <h3><i class="fas fa-history"></i> Recent Translations</h3>
+                <div id="recentTranslations" class="translations-list">
+                    <div class="empty-state">
+                        <i class="far fa-comment-alt"></i>
+                        <p>No recent translations yet</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== DICTIONARY MANAGEMENT CONTAINER ===== -->
+        <div class="container dictionary-section">
+            <h2><i class="fas fa-plus-circle"></i> Dictionary Management</h2>
+            
+            <!-- Add New Word Form -->
+            <div class="add-word-form">
+                <div class="form-group">
+                    <label for="posSelect">📚 Word Category:</label>
+                    <select id="posSelect" class="form-select">
+                        <option value="nouns">🏠 Noun (People, Places, Things)</option>
+                        <option value="pronouns">👤 Pronoun (I, You, We, They)</option>
+                        <option value="verbs">🏃 Verb (Actions)</option>
+                        <option value="adjectives">🎨 Adjective (Descriptions)</option>
+                        <option value="adverbs">⚡ Adverb (How, When, Where)</option>
+                        <option value="prepositions">📍 Preposition (Location, Direction)</option>
+                        <option value="conjunctions">🔗 Conjunction (And, But, Or)</option>
+                        <option value="articles">📌 Article (The, A, An)</option>
+                        <option value="interjections">❗ Interjection (Emotions)</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="newWord">🏝️ Tausug Word:</label>
+                        <input type="text" id="newWord" class="form-input" 
+                               placeholder="Enter Tausug word..." spellcheck="false">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="newMeaning">🇬🇧 English Meaning:</label>
+                        <input type="text" id="newMeaning" class="form-input" 
+                               placeholder="Enter English meaning...">
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button id="addWordBtn" class="btn-primary">
+                        <i class="fas fa-plus"></i> Add Word
+                    </button>
+                    <button id="suggestWordBtn" class="btn-secondary">
+                        <i class="fab fa-github"></i> Submit to GitHub
+                    </button>
+                </div>
+                
+                <div class="form-note">
+                    <i class="fas fa-info-circle"></i> 
+                    <strong>Note:</strong> Words added here are saved to YOUR browser. 
+                    Click "Submit to GitHub" to share with the community!
+                </div>
+            </div>
+
+            <!-- ===== WORD DETAILS POPOVER ===== -->
+            <div id="word-info" popover>
+                <h3>
+                    <i class="fas fa-book-open"></i> Word Details
+                </h3>
+                <div class="word-details-content">
+                    <p><strong>Tausug:</strong> <span id="popover-word">bay</span></p>
+                    <p><strong>Pronunciation:</strong> <span id="popover-pronunciation">[BAY]</span></p>
+                    <p><strong>English:</strong> <span id="popover-meaning">house</span></p>
+                    <p><strong>Category:</strong> <span id="popover-category">Noun</span></p>
+                </div>
+                <div class="popover-actions">
+                    <button popovertarget="word-info" popovertargetaction="hide" class="close-btn">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== DICTIONARY STATISTICS ===== -->
+            <div class="dictionary-stats">
+                <h3><i class="fas fa-chart-bar"></i> Dictionary Statistics</h3>
+                <div id="dictionaryStats" class="stats-grid">
+                    <!-- Stats populated by JavaScript -->
+                </div>
+            </div>
+
+            <!-- ===== GITHUB INTEGRATION ===== -->
+            <div class="github-section">
+                <h3><i class="fab fa-github"></i> Community Contributions</h3>
+                <div class="github-actions">
+                    <button id="loadDictionaryBtn" class="github-btn">
+                        <i class="fas fa-cloud-download-alt"></i> Load Community Dictionary
+                    </button>
+                    <button id="downloadJSONBtn" class="github-btn">
+                        <i class="fas fa-download"></i> Download Current Dictionary
+                    </button>
+                    <button id="viewSourceBtn" class="github-btn">
+                        <i class="fas fa-code"></i> View Source Code
+                    </button>
+                </div>
+                
+                <div class="github-info">
+                    <p>
+                        <i class="fas fa-info-circle"></i> 
+                        <strong>📝 How to contribute:</strong><br>
+                        1️⃣ Add words using the form above<br>
+                        2️⃣ Click "Submit to GitHub" to create an issue<br>
+                        3️⃣ Your words will be reviewed and added to the community dictionary!<br>
+                        <br>
+                        <i class="fas fa-heart" style="color: #e53e3e;"></i> 
+                        Every word helps preserve the Tausug language!
+                    </p>
+                </div>
+            </div>
+            
+        
+        </div>
+    </div>
+
+    <!-- ===== SENTENCES POPUP - FIXED ===== -->
+<div id="sentencesOverlay" class="popup-overlay"></div>
+<div id="sentencesPopup" class="popup">
+    <div class="popup-header">
+        <h3><i class="fas fa-comment-alt"></i> Example Sentences</h3>
+        <button id="closeSentencesBtn" class="close-btn">&times;</button>
+    </div>
+    <div id="sentencesContent" class="popup-content">
+        <div class="empty-sentences">
+            <i class="fas fa-comments"></i>
+            <p>No example sentences found for this word.</p>
+        </div>
+    </div>
+</div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="app-footer">
+        <p>
+            <span class="copyright">© 2024 Tausug Translator</span>
+            <span class="separator">•</span>
+            <span class="license">MIT License</span>
+            <span class="separator">•</span>
+            <span class="credits">Made with ❤️ for language preservation</span>
+        </p>
+        <p class="footer-links">
+            <a href="https://github.com/ramy430/tausug-translator" target="_blank" rel="noopener noreferrer">
+                <i class="fab fa-github"></i> GitHub Repository
+            </a>
+            <a href="https://github.com/ramy430/tausug-translator/issues/new" target="_blank" rel="noopener noreferrer">
+                <i class="fas fa-plus-circle"></i> Submit Words
+            </a>
+            <a href="https://github.com/ramy430/tausug-translator/issues" target="_blank" rel="noopener noreferrer">
+                <i class="fas fa-bug"></i> Report Issue
+            </a>
+        </p>
+        <p style="margin-top: 20px; font-size: 0.85rem;">
+            <i class="fas fa-globe-asia"></i> Preserving Tausug (Bahasa Sūg) — One word at a time
+        </p>
+    </footer>
+
+    <!-- JavaScript File -->
+    <script src="assets/js/app.js" defer></script>
+</body>
+</html>
