@@ -728,9 +728,39 @@ document.addEventListener('DOMContentLoaded', async function() {
                 e.preventDefault();
                 translateBtn.click();
             }
-        });
+        })
     }
     
+    // ===== ALPHABET BROWSER TOGGLE =====
+const browseTausugBtn = document.getElementById('browseTausugBtn');
+const browseEnglishBtn = document.getElementById('browseEnglishBtn');
+const tausugLetters = document.getElementById('tausugLetters');
+const englishLetters = document.getElementById('englishLetters');
+
+if (browseTausugBtn && browseEnglishBtn) {
+    // Initial render
+    renderTausugLetters();
+    
+    browseTausugBtn.addEventListener('click', () => {
+        browseTausugBtn.classList.add('active');
+        browseEnglishBtn.classList.remove('active');
+        tausugLetters.style.display = 'flex';
+        englishLetters.style.display = 'none';
+        renderTausugLetters();
+        document.getElementById('browseResults').innerHTML = 
+            '<div class="empty-state">Select a letter to see Tausug words</div>';
+    });
+    
+    browseEnglishBtn.addEventListener('click', () => {
+        browseEnglishBtn.classList.add('active');
+        browseTausugBtn.classList.remove('active');
+        englishLetters.style.display = 'flex';
+        tausugLetters.style.display = 'none';
+        renderEnglishLetters();
+        document.getElementById('browseResults').innerHTML = 
+            '<div class="empty-state">Select a letter to see English words</div>';
+    });
+}
     console.log('✅ Tausug Translator ready!');
     console.log(`📚 Dictionary: ${Object.keys(dictionary).length} words (Community: ${communityWordCount})`);
 });
