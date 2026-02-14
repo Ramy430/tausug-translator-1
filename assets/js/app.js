@@ -343,6 +343,159 @@ async function resetToCommunityDictionary() {
 function resetToDefaultDictionary() {
     resetToCommunityDictionary();
 }
+// ===== ALPHABET BROWSER FUNCTIONS =====
+
+// Get all Tausug words starting with a letter
+function fetchTausugWordsByLetter(letter) {
+    const results = [];
+    letter = letter.toLowerCase().trim();
+    
+    for (let category in dictionary) {
+        if (typeof dictionary[category] === 'object' && dictionary[category] !== null) {
+            for (let [word, meaning] of Object.entries(dictionary[category])) {
+                if (word.toLowerCase().startsWith(letter)) {
+                    results.push({
+                        word: word,
+                        meaning: meaning,
+                        category: category
+                    });
+                }
+            }
+        }
+    }
+    
+    return results.sort((a, b) => a.word.localeCompare(b.word));
+}
+
+// Get all English words starting with a letter
+function fetchEnglishWordsByLetter(letter) {
+    const results = [];
+    letter = letter.toLowerCase().trim();
+    
+    for (let category in dictionary) {
+        if (typeof dictionary[category] === 'object' && dictionary[category] !== null) {
+            for (let [word, meaning] of Object.entries(dictionary[category])) {
+                if (meaning.toLowerCase().startsWith(letter)) {
+                    results.push({
+                        word: word,
+                        meaning: meaning,
+                        category: category
+                    });
+                }
+            }
+        }
+    }
+    
+    return results.sort((a, b) => a.meaning.localeCompare(b.meaning));
+}
+
+// Get available letters for Tausug
+function getTausugLetters() {
+    const letters = new Set();
+    
+    for (let category in dictionary) {
+        if (typeof dictionary[category] === 'object' && dictionary[category] !== null) {
+            for (let word in dictionary[category]) {
+                const firstLetter = word.charAt(0).toLowerCase();
+                if (firstLetter.match(/[a-zāēīōū]/)) {
+                    letters.add(firstLetter);
+                }
+            }
+        }
+    }
+    
+    return Array.from(letters).sort();
+}
+
+// Get available letters for English
+function getEnglishLetters() {
+    const letters = new Set();
+    
+    for (let category in dictionary) {
+        if (typeof dictionary[category] === 'object' && dictionary[category] !== null) {
+            for (let meaning of Object.values(dictionary[category])) {
+                const firstLetter = meaning.charAt(0).toLowerCase();
+                if (firstLetter.match(/[a-z]/)) {
+                    letters.add(firstLetter);
+                }
+            }
+        }
+    }
+    
+    return Array.from(letters).sort();
+}
+
+// Render Tausug letter buttons
+function renderTausugLetters() {
+    const container = document.getElementById('tausugLetters');
+    if (!container) return;
+    
+    const letters = getTausugLetters();
+    container.innerHTML = '';
+    
+    letters.forEach(letter => {
+        const btn = document.createElement('button');
+        btn.className = 'letter-btn';
+        btn.dataset.letter = letter;
+        btn.textContent = letter.toUpperCase();
+        btn.addEventListener('click', () => {
+            const results = fetchTausugWordsByLetter(letter);
+            displayResults(letter, results, 'tausug');
+        });
+        container.appendChild(btn);
+    });
+}
+
+// Render English letter buttons
+function renderEnglishLetters() {
+    const container = document.getElementById('englishLetters');
+    if (!container) return;
+    
+    const letters = getEnglishLetters();
+    container.innerHTML = '';
+    
+    letters.forEach(letter => {
+        const btn = document.createElement('button');
+        btn.className = 'letter-btn';
+        btn.dataset.letter = letter;
+        btn.textContent = letter.toUpperCase();
+        btn.addEventListener('click', () => {
+            const results = fetchEnglishWordsByLetter(letter);
+            displayResults(letter, results, 'english');
+        });
+        container.appendChild(btn);
+    });
+}
+
+// Display results
+function displayResults(letter, results, language) {
+    const container = document.getElementById('browseResults');
+    
+    if (results.length === 0) {
+        container.innerHTML = `<div class="empty-state">No words found starting with "${letter.toUpperCase()}"</div>`;
+        return;
+    }
+    
+    let html = `<h4>${results.length} word(s) starting with "${letter.toUpperCase()}"</h4>`;
+    
+    results.forEach(item => {
+        if (language === 'tausug') {
+            html += `<div class="word-entry">
+                <span class="word-tausug">${item.word}</span>
+                <span class="word-meaning"> — ${item.meaning}</span>
+                <div class="word-category">${item.category}</div>
+            </div>`;
+        } else {
+            html += `<div class="word-entry">
+                <span class="word-english">${item.meaning}</span>
+                <span class="word-meaning"> — ${item.word}</span>
+                <div class="word-category">${item.category}</div>
+            </div>`;
+        }
+    });
+    
+    container.innerHTML = html;
+}
 
 // ===== INITIALIZATION =====
 document.addEventListener('DOMContentLoaded', async function() {
